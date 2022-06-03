@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32421.90
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonitoraAtivo", "MonitoraAtivo\MonitoraAtivo.csproj", "{FE5263A4-1928-4DCC-A441-B2A22AE9A1C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitoraAtivo.Tests", "MonitoraAtivo.Tests\MonitoraAtivo.Tests.csproj", "{2A8D2EC0-41ED-41D2-B23F-3A602FA32C6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonitoraAtivo.Tests", "MonitoraAtivo.Tests\MonitoraAtivo.Tests.csproj", "{2A8D2EC0-41ED-41D2-B23F-3A602FA32C6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitoraAtivo.Domain", "MonitoraAtivo.Domain\MonitoraAtivo.Domain.csproj", "{6AEBD0D1-752F-4589-90BD-90202D2AFDF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{2A8D2EC0-41ED-41D2-B23F-3A602FA32C6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A8D2EC0-41ED-41D2-B23F-3A602FA32C6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A8D2EC0-41ED-41D2-B23F-3A602FA32C6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AEBD0D1-752F-4589-90BD-90202D2AFDF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AEBD0D1-752F-4589-90BD-90202D2AFDF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AEBD0D1-752F-4589-90BD-90202D2AFDF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AEBD0D1-752F-4589-90BD-90202D2AFDF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

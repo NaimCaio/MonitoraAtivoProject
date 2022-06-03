@@ -1,4 +1,4 @@
-﻿using MonitoraAtivo.Model;
+﻿using MonitoraAtivo.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

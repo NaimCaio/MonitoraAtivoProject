@@ -2,4 +2,6 @@ MonitoraAtivo/bin
 MonitoraAtivo/obj
 MonitoraAtivo.Tests/bin
 MonitoraAtivo.Tests/obj
+MonitoraAtivo.Domain/bin
+MonitoraAtivo.Domain/obj
 .vs/

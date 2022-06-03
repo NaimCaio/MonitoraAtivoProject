@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonitoraAtivo.Model.Interfaces
+namespace MonitoraAtivo.Domain.Interfaces
 {
     public interface IMailService
     {

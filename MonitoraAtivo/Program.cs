@@ -1,15 +1,16 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Configuration;
-using MonitoraAtivo.Model.Interfaces;
 using MonitoraAtivo.Services;
-using System;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using MonitoraAtivo.Model;
 using System.Threading;
 using System.Globalization;
+using MonitoraAtivo.Domain.Interfaces;
+using MonitoraAtivo.Domain.Models.Configuration;
+using MonitoraAtivo.Domain.Models;
+using MonitoraAtivo.Domain.BaseServices;
 
 namespace MonitoraAtivo
 {
@@ -26,7 +27,7 @@ namespace MonitoraAtivo
             var applicationService = serviceProvider.GetService<IApplicationService>();
 
             Console.WriteLine("Começando aplicação");
-            applicationService.startApplication();
+            applicationService.StartApplication();
             WaitApplication.WaitOne();
         }
 
@@ -50,7 +51,6 @@ namespace MonitoraAtivo
             services.AddScoped<IApplicationService, ApplicationService>();
             services.AddScoped<IFinanceService, FinanceService>();
             services.AddScoped<IMailService, MailService>();
-            //services.AddSingleton<IFinanceService>( new  FinanceService(apiKey,financeApiURI,financeApiTemplate));
         }
     }
 }

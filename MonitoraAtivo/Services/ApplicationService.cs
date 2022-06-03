@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using MonitoraAtivo.Model;
-using MonitoraAtivo.Model.Constants;
-using MonitoraAtivo.Model.Interfaces;
+using MonitoraAtivo.Domain.Interfaces;
+using MonitoraAtivo.Domain.Models;
+using MonitoraAtivo.Domain.Models.Configuration;
+using MonitoraAtivo.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace MonitoraAtivo.Services
             _mailService = mailService;
             _config = config;
         }
-        public async void startApplication()
+        public async void StartApplication()
         {
             
             await Monitorate();
@@ -40,10 +41,13 @@ namespace MonitoraAtivo.Services
             var title = "Monitoração Ativo - " + symbol;
             while (true)
             {
-                Console.WriteLine("Obtendo cotacao");
-                var response = await _financeService.getStockData(symbol);
+                Console.WriteLine("Obtendo cotacao ativo " + symbol);
+                var response = await _financeService.GetStockData(symbol);
                 var lastQuote = response.values[0];
                 var lastValue = lastQuote.close;
+                Console.WriteLine("Ativo: " + symbol );
+                Console.WriteLine("Fechamento: " + lastValue);
+                Console.WriteLine("Horario: " + lastQuote.datetime);
                 if (lastValue >= sellPrice)
                 {
                     var mailResponse= await _mailService.SendEmailAsync(title, MailConstants.SellMessage );

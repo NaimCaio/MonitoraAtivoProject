@@ -1,5 +1,6 @@
-﻿using MonitoraAtivo.Model;
-using MonitoraAtivo.Model.Interfaces;
+﻿using MonitoraAtivo.Domain.Interfaces;
+using MonitoraAtivo.Domain.Models;
+using MonitoraAtivo.Domain.Models.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using YahooFinanceApi;
 
-namespace MonitoraAtivo.Services
+namespace MonitoraAtivo.Domain.BaseServices
 {
     public class FinanceService: IFinanceService
     {
@@ -20,7 +20,7 @@ namespace MonitoraAtivo.Services
             _config = config;
         }
 
-        public async Task<Ativo> getStockData(string symbol)
+        public async Task<Ativo> GetStockData(string symbol)
         {
             
             var httpClient = new HttpClient();

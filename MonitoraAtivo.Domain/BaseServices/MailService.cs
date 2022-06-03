@@ -1,17 +1,17 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using MonitoraAtivo.Model;
-using MonitoraAtivo.Model.Interfaces;
+using MonitoraAtivo.Domain.Interfaces;
+using MonitoraAtivo.Domain.Models.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonitoraAtivo.Services
+namespace MonitoraAtivo.Domain.BaseServices
 {
-    class MailService: IMailService
+    public class MailService: IMailService
     {
         private readonly ApplicationConfiguration _config;
         public MailService(ApplicationConfiguration config)
@@ -23,6 +23,7 @@ namespace MonitoraAtivo.Services
 
         public async Task<string> SendEmailAsync(string title, string content)
         {
+            Console.WriteLine(content);
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_config.MailConfiguration.Sender);
             foreach (var to in _config.MailConfiguration.To)
@@ -38,10 +39,12 @@ namespace MonitoraAtivo.Services
             using var smtp = new SmtpClient();
             try
             {
+                Console.WriteLine("Enviando e-mail");
                 smtp.Connect(_config.MailConfiguration.Host, _config.MailConfiguration.Port, SecureSocketOptions.StartTls);
                 smtp.Authenticate(_config.MailConfiguration.Sender, _config.MailConfiguration.Password);
-                var response =smtp.Send(email);
+                var response = await smtp.SendAsync(email);
                 smtp.Disconnect(true);
+                Console.WriteLine("E-mail enviado");
                 return response;
             }
             catch (Exception ex )

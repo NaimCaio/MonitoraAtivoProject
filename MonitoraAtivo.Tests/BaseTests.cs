@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MonitoraAtivo.Model;
+using MonitoraAtivo.Domain.Models;
+using MonitoraAtivo.Domain.Models.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;

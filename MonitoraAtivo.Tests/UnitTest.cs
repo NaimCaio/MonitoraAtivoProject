@@ -1,7 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MonitoraAtivo.Model;
-using MonitoraAtivo.Model.Constants;
-using MonitoraAtivo.Model.Interfaces;
+using MonitoraAtivo.Domain.Interfaces;
+using MonitoraAtivo.Domain.Models;
+using MonitoraAtivo.Domain.Models.Configuration;
+using MonitoraAtivo.Domain.Shared;
 using MonitoraAtivo.Services;
 using MonitoraAtivo.Tests.Builders;
 using Moq;
@@ -43,9 +44,9 @@ namespace MonitoraAtivo.Tests
             var ativo = ativoBuilder.WithDateTime(DateTime.Now)
                 .WithValue(120)
                 .Build();
-            _financeService.Setup(x => x.getStockData(_args.Symbol)).Returns(Task.FromResult(ativo));
+            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(Task.FromResult(ativo));
             _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage)).Returns(Task.FromResult("e-mail de venda"));
-            applicationService.startApplication();
+            applicationService.StartApplication();
             _mailService.Verify(x => x.SendEmailAsync( It.IsAny<string>(), MailConstants.SellMessage), Times.Once);
         }
 
@@ -58,9 +59,9 @@ namespace MonitoraAtivo.Tests
             var ativo = ativoBuilder.WithDateTime(DateTime.Now)
                 .WithValue(10)
                 .Build();
-            _financeService.Setup(x => x.getStockData(_args.Symbol)).Returns(Task.FromResult(ativo));
+            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(Task.FromResult(ativo));
             _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage)).Returns(Task.FromResult("e-mail de compra"));
-            applicationService.startApplication();
+            applicationService.StartApplication();
             _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage), Times.Once);
         }
 
@@ -80,16 +81,16 @@ namespace MonitoraAtivo.Tests
                 .Build()
             };
             var quantidaddeCotacoes = cotacoes.Count();
-            _financeService.Setup(x => x.getStockData(_args.Symbol)).Returns(() => {
+            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(() => {
                 var ativoRetornado = Task.FromResult(cotacoes.FirstOrDefault());
                 cotacoes.RemoveAt(0);
                 return ativoRetornado;
                 });
             
             _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage)).Returns(Task.FromResult("e-mail de compra"));
-            applicationService.startApplication();
+            applicationService.StartApplication();
             _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage), Times.Once);
-            _financeService.Verify(x => x.getStockData(It.IsAny<string>()), Times.Exactly(quantidaddeCotacoes));
+            _financeService.Verify(x => x.GetStockData(It.IsAny<string>()), Times.Exactly(quantidaddeCotacoes));
         }
 
         [TestMethod]
@@ -109,15 +110,15 @@ namespace MonitoraAtivo.Tests
                 .Build()
             };
             var quantidaddeCotacoes = cotacoes.Count();
-            _financeService.Setup(x => x.getStockData(_args.Symbol)).Returns(() => {
+            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(() => {
                 var ativoRetornado = Task.FromResult(cotacoes.FirstOrDefault());
                 cotacoes.RemoveAt(0);
                 return ativoRetornado;
             });
             _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage)).Returns(Task.FromResult("e-mail de compra"));
-            applicationService.startApplication();
+            applicationService.StartApplication();
             _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage), Times.Once);
-            _financeService.Verify(x => x.getStockData(It.IsAny<string>()), Times.Exactly(quantidaddeCotacoes));
+            _financeService.Verify(x => x.GetStockData(It.IsAny<string>()), Times.Exactly(quantidaddeCotacoes));
         }
     }
 }

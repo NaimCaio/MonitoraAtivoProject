@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonitoraAtivo.Model
+namespace MonitoraAtivo.Domain.Models
 {
     public class Ativo
     {

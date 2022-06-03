@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonitoraAtivo.Model.Constants
+namespace MonitoraAtivo.Domain.Shared
 {
     public static class MailConstants
     {
