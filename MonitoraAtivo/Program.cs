@@ -8,11 +8,14 @@ using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using MonitoraAtivo.Model;
+using System.Threading;
+using System.Globalization;
 
 namespace MonitoraAtivo
 {
     class Program
     {
+        private static EventWaitHandle WaitApplication = new EventWaitHandle(false, EventResetMode.ManualReset);
         static void Main(string[] args)
         {
             var serviceCollection = new ServiceCollection();
@@ -24,6 +27,7 @@ namespace MonitoraAtivo
 
             Console.WriteLine("Começando aplicação");
             applicationService.startApplication();
+            WaitApplication.WaitOne();
         }
 
         public static void ConfigureServices(IServiceCollection services, string[] args)
@@ -39,7 +43,7 @@ namespace MonitoraAtivo
 
 
 
-            var applicationargs = new ApplicationArgs(args[0], args[1], args[2]);
+            var applicationargs = new ApplicationArgs(args[0], decimal.Parse(args[1], CultureInfo.InvariantCulture), decimal.Parse(args[2], CultureInfo.InvariantCulture));
 
             services.AddSingleton(config);
             services.AddSingleton(applicationargs);

@@ -8,6 +8,6 @@ namespace MonitoraAtivo.Model.Interfaces
 {
     public interface IFinanceService
     {
-        Task<AtivoDTO> getStockData(string symbol);
+        Task<Ativo> getStockData(string symbol);
     }
 }

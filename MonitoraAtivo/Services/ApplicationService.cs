@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MonitoraAtivo.Model;
+using MonitoraAtivo.Model.Constants;
 using MonitoraAtivo.Model.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -26,44 +27,41 @@ namespace MonitoraAtivo.Services
         }
         public async void startApplication()
         {
-            //Parallel.Invoke(() => Monitorate(args), ()=>printar());
-            var t = Task.Run(() => Monitorate());
-            t.Wait();
+            
+            await Monitorate();
         }
 
         
-        private async void Monitorate()
+        private async Task Monitorate()
         {
-            Console.WriteLine("obtendo cotacao");
             var symbol = _args.Symbol;
-            var sellPrice = decimal.Parse(_args.SellPrice);
-            var buyPrice = decimal.Parse(_args.BuyPrice);
+            var sellPrice = _args.SellPrice;
+            var buyPrice = _args.BuyPrice;
+            var title = "Monitoração Ativo - " + symbol;
             while (true)
             {
-                Console.WriteLine("obtendo cotacao");
+                Console.WriteLine("Obtendo cotacao");
                 var response = await _financeService.getStockData(symbol);
                 var lastQuote = response.values[0];
                 var lastValue = lastQuote.close;
-                if (decimal.Parse(lastQuote.close) >= sellPrice)
+                if (lastValue >= sellPrice)
                 {
-                    var mailResponse= await _mailService.SendEmailAsync("comprar", "comprar");
+                    var mailResponse= await _mailService.SendEmailAsync(title, MailConstants.SellMessage );
                     if (mailResponse != null)
                     {
                         break;
                     }
                     
                 }
-                else if (decimal.Parse(lastQuote.close) <= buyPrice)
+                else if (lastValue <= buyPrice)
                 {
-                    var mailResponse =  await _mailService.SendEmailAsync("vendaa", "venda");
+                    var mailResponse =  await _mailService.SendEmailAsync(title, MailConstants.BuyMessage);
                     if (mailResponse !=null)
                     {
                         break;
                     }
                 }
-                Console.WriteLine(DateTime.Now);
                 Thread.Sleep(10000);
-                Console.WriteLine(DateTime.Now);
             }
         }
     }

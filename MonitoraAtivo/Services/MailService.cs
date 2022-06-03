@@ -13,7 +13,6 @@ namespace MonitoraAtivo.Services
 {
     class MailService: IMailService
     {
-        private readonly SmtpClient _smtpClient;
         private readonly ApplicationConfiguration _config;
         public MailService(ApplicationConfiguration config)
         {
@@ -45,10 +44,10 @@ namespace MonitoraAtivo.Services
                 smtp.Disconnect(true);
                 return response;
             }
-            catch (Exception)
+            catch (Exception ex )
             {
 
-                throw;
+                throw new Exception(ex.Message);
             }
             
         }

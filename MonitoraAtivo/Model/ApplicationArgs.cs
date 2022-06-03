@@ -9,10 +9,10 @@ namespace MonitoraAtivo.Model
     public class ApplicationArgs
     {
         public readonly string Symbol;
-        public readonly string BuyPrice;
-        public readonly string SellPrice; 
+        public readonly decimal BuyPrice;
+        public readonly decimal SellPrice; 
 
-        public ApplicationArgs(string symbol, string buyPrice, string sellPrice)
+        public ApplicationArgs(string symbol, decimal sellPrice, decimal buyPrice)
         {
             Symbol = symbol;
             BuyPrice = buyPrice;

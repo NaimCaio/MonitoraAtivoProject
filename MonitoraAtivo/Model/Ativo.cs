@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonitoraAtivo.Model
 {
-    public class AtivoDTO
+    public class Ativo
     {
         public List<Quote> values { get; set; }
     }
@@ -14,10 +14,10 @@ namespace MonitoraAtivo.Model
     public class Quote
     {
         public DateTime datetime;
-        public string open;
-        public string high;
-        public string low;
-        public string close;
+        public decimal open;
+        public decimal high;
+        public decimal low;
+        public decimal close;
 
     }
 }
