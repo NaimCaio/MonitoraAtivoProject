@@ -50,6 +50,7 @@ namespace MonitoraAtivo
             services.AddSingleton(applicationargs);
             services.AddScoped<IApplicationService, ApplicationService>();
             services.AddScoped<IFinanceService, FinanceService>();
+            services.AddScoped<IObserver, NotificadorAtivo>();
             services.AddScoped<IMailService, MailService>();
         }
     }

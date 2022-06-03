@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MonitoraAtivo.Domain.BaseServices;
 using MonitoraAtivo.Domain.Interfaces;
 using MonitoraAtivo.Domain.Models;
 using MonitoraAtivo.Domain.Models.Configuration;
@@ -19,11 +20,10 @@ namespace MonitoraAtivo.Tests
         private ApplicationConfiguration _config;
         private ApplicationArgs _args;
         private readonly Mock<IMailService> _mailService;
-        private readonly Mock<IFinanceService> _financeService;
+        private readonly Mock<IObserver> _observer;
         public UnitTests() : base()
         {
             _mailService = new Mock<IMailService>();
-            _financeService = new Mock<IFinanceService>();
         }
 
         [TestInitialize]
@@ -34,43 +34,65 @@ namespace MonitoraAtivo.Tests
             base.SetupTestDependencies(_config, _args);
         }
 
+        
+
 
         [TestMethod]
         public void VenderQuandoPrecoMaiorQueMaixmoInformado()
         {
-
-            var applicationService = new ApplicationService(_financeService.Object, _config, _mailService.Object, _args);
+            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage)).Returns(Task.FromResult("e-mail de venda"));
+            var monitorador = new MonitoradorAtivo();
+            var notificador = new NotificadorAtivo(_mailService.Object, _args);
+            monitorador.Atach(notificador);
             var ativoBuilder = new AtivoBuilder();
             var ativo = ativoBuilder.WithDateTime(DateTime.Now)
                 .WithValue(120)
                 .Build();
-            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(Task.FromResult(ativo));
-            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage)).Returns(Task.FromResult("e-mail de venda"));
-            applicationService.StartApplication();
+           
+            monitorador.actualQuote = ativo.values[0];
             _mailService.Verify(x => x.SendEmailAsync( It.IsAny<string>(), MailConstants.SellMessage), Times.Once);
         }
 
         [TestMethod]
         public void ComprarQuandoPrecoMenorQueMinimoInformado()
         {
-
-            var applicationService = new ApplicationService(_financeService.Object, _config, _mailService.Object, _args);
+            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage)).Returns(Task.FromResult("e-mail de compra"));
+            var monitorador = new MonitoradorAtivo();
+            var notificador = new NotificadorAtivo(_mailService.Object, _args);
+            monitorador.Atach(notificador);
             var ativoBuilder = new AtivoBuilder();
             var ativo = ativoBuilder.WithDateTime(DateTime.Now)
                 .WithValue(10)
                 .Build();
-            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(Task.FromResult(ativo));
-            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage)).Returns(Task.FromResult("e-mail de compra"));
-            applicationService.StartApplication();
+           
+            monitorador.actualQuote = ativo.values[0];
             _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage), Times.Once);
         }
 
         [TestMethod]
-        public void MonitoracaoTesteVenda()
+        public void NaoEnviarEmailEmValorIntermediario()
         {
+            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult("e-mail"));
+            var monitorador = new MonitoradorAtivo();
+            var notificador = new NotificadorAtivo(_mailService.Object, _args);
+            monitorador.Atach(notificador);
+            var ativoBuilder = new AtivoBuilder();
+            var ativo = ativoBuilder.WithDateTime(DateTime.Now)
+                .WithValue(50)
+                .Build();
+            
+            monitorador.actualQuote = ativo.values[0];
+            _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(0));
+        }
 
-            var applicationService = new ApplicationService(_financeService.Object, _config, _mailService.Object, _args);
-             
+        [TestMethod]
+        public void MonitoracaoTeste()
+        {
+            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage)).Returns(Task.FromResult("e-mail de venda"));
+            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage)).Returns(Task.FromResult("e-mail de compra"));
+            var monitorador = new MonitoradorAtivo();
+            var notificador = new NotificadorAtivo(_mailService.Object, _args);
+            monitorador.Atach(notificador);
             var cotacoes = new List<Ativo>()
             {
                 new AtivoBuilder().WithDateTime(DateTime.Now)
@@ -78,47 +100,25 @@ namespace MonitoraAtivo.Tests
                 .Build(),
                 new AtivoBuilder().WithDateTime(DateTime.Now)
                 .WithValue(120)
-                .Build()
-            };
-            var quantidaddeCotacoes = cotacoes.Count();
-            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(() => {
-                var ativoRetornado = Task.FromResult(cotacoes.FirstOrDefault());
-                cotacoes.RemoveAt(0);
-                return ativoRetornado;
-                });
-            
-            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage)).Returns(Task.FromResult("e-mail de compra"));
-            applicationService.StartApplication();
-            _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage), Times.Once);
-            _financeService.Verify(x => x.GetStockData(It.IsAny<string>()), Times.Exactly(quantidaddeCotacoes));
-        }
-
-        [TestMethod]
-        public void MonitoracaoTesteCompra()
-        {
-            var applicationService = new ApplicationService(_financeService.Object, _config, _mailService.Object, _args);
-            var cotacoes = new List<Ativo>()
-            {
-                new AtivoBuilder().WithDateTime(DateTime.Now)
-                .WithValue(50)
                 .Build(),
                 new AtivoBuilder().WithDateTime(DateTime.Now)
-                .WithValue(30)
+                .WithValue(50)
                 .Build(),
                 new AtivoBuilder().WithDateTime(DateTime.Now)
                 .WithValue(10)
                 .Build()
             };
-            var quantidaddeCotacoes = cotacoes.Count();
-            _financeService.Setup(x => x.GetStockData(_args.Symbol)).Returns(() => {
-                var ativoRetornado = Task.FromResult(cotacoes.FirstOrDefault());
-                cotacoes.RemoveAt(0);
-                return ativoRetornado;
+            
+            cotacoes.ForEach(c =>
+            {
+                monitorador.actualQuote = c.values[0];
             });
-            _mailService.Setup(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage)).Returns(Task.FromResult("e-mail de compra"));
-            applicationService.StartApplication();
+            
+            
+            _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.SellMessage), Times.Once);
             _mailService.Verify(x => x.SendEmailAsync(It.IsAny<string>(), MailConstants.BuyMessage), Times.Once);
-            _financeService.Verify(x => x.GetStockData(It.IsAny<string>()), Times.Exactly(quantidaddeCotacoes));
         }
+
+        
     }
 }

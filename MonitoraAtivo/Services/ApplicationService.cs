@@ -14,16 +14,19 @@ namespace MonitoraAtivo.Services
 {
     public class ApplicationService : IApplicationService
     {
+        private readonly MonitoradorAtivo _monitoradorAtivo;
+        private readonly IObserver _notificadordorAtivo;
         private readonly IFinanceService _financeService;
-        private readonly IMailService _mailService;
         private readonly ApplicationConfiguration _config;
         private readonly ApplicationArgs _args;
 
-        public ApplicationService(IFinanceService financeService, ApplicationConfiguration config, IMailService mailService, ApplicationArgs args)
+        public ApplicationService(IFinanceService financeService, ApplicationConfiguration config, IMailService mailService, ApplicationArgs args, IObserver notificadordorAtivo)
         {
+            _monitoradorAtivo = new MonitoradorAtivo();
+            _notificadordorAtivo = notificadordorAtivo;
+            _monitoradorAtivo.Atach(notificadordorAtivo);
             _args = args;
             _financeService = financeService;
-            _mailService = mailService;
             _config = config;
         }
         public async void StartApplication()
@@ -36,35 +39,16 @@ namespace MonitoraAtivo.Services
         private async Task Monitorate()
         {
             var symbol = _args.Symbol;
-            var sellPrice = _args.SellPrice;
-            var buyPrice = _args.BuyPrice;
-            var title = "Monitoração Ativo - " + symbol;
             while (true)
             {
                 Console.WriteLine("Obtendo cotacao ativo " + symbol);
                 var response = await _financeService.GetStockData(symbol);
-                var lastQuote = response.values[0];
-                var lastValue = lastQuote.close;
-                Console.WriteLine("Ativo: " + symbol );
-                Console.WriteLine("Fechamento: " + lastValue);
-                Console.WriteLine("Horario: " + lastQuote.datetime);
-                if (lastValue >= sellPrice)
-                {
-                    var mailResponse= await _mailService.SendEmailAsync(title, MailConstants.SellMessage );
-                    if (mailResponse != null)
-                    {
-                        break;
-                    }
-                    
-                }
-                else if (lastValue <= buyPrice)
-                {
-                    var mailResponse =  await _mailService.SendEmailAsync(title, MailConstants.BuyMessage);
-                    if (mailResponse !=null)
-                    {
-                        break;
-                    }
-                }
+                var actualQuote = response.values[0];
+                var actualQuoteValue = actualQuote.close;
+                Console.WriteLine("Ativo: " + symbol);
+                Console.WriteLine("Fechamento: " + actualQuoteValue);
+                Console.WriteLine("Horario: " + actualQuote.datetime);
+                _monitoradorAtivo.actualQuote = actualQuote;
                 Thread.Sleep(10000);
             }
         }
